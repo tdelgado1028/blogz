@@ -19,9 +19,10 @@ class BlogHandler(webapp2.RequestHandler):
             Get all posts by a specific user, ordered by creation date (descending).
             The user parameter will be a User object.
         """
-
         # TODO - filter the query so that only posts by the given user
-        return None
+        post = db.GqlQuery("SELECT * FROM Post WHERE author = :1 order by created desc", user)
+        if post:
+            return post
 
     def get_user_by_name(self, username):
         """ Get a user object from the db, based on their username """
@@ -99,7 +100,8 @@ class BlogIndexHandler(BlogHandler):
         else:
             prev_page = None
 
-        if len(posts) == self.page_size and Post.all().count() > offset+self.page_size:
+        #if len(posts)
+        if posts.count(0) == self.page_size and Post.all().count(0) > offset+self.page_size:
             next_page = page + 1
         else:
             next_page = None
@@ -288,7 +290,7 @@ class LogoutHandler(BlogHandler):
 
     def get(self):
         self.logout_user()
-        self.redirect('/blog')
+        self.redirect('/')
 
 app = webapp2.WSGIApplication([
     ('/', IndexHandler),
